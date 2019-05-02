@@ -9,22 +9,24 @@ public class Photon {
         Calculator calc = new Calculator();
         //по умолчанию - в случайном месте и со случайным направлением
         Random random = new Random(System.currentTimeMillis());
-        this.ph.x = random.nextInt((int)Crystal.X_MAX + 1) + Math.random();
-        this.ph.y = random.nextInt((int)Crystal.Y_MAX + 1) + Math.random();
-        this.ph.z = random.nextInt((int)Crystal.Z_MAX + 1) + Math.random();
+        this.ph.setX(random.nextInt((int)Crystal.X_MAX + 1) + Math.random());
+        this.ph.setY(random.nextInt((int)Crystal.Y_MAX + 1) + Math.random());
+        this.ph.setZ(random.nextInt((int)Crystal.Z_MAX + 1) + Math.random());
         double vx = random.nextInt();
         double vy = random.nextInt();
         double vz = random.nextInt();
         Coordinates v = new Coordinates(vx, vy, vz);
         double absv = calc.vectorLength(v);
         //посчитали рандомные координаты для направляющего вектора, а потом отнормировали
-        this.direction.x = vx/absv;
-        this.direction.y = vy/absv;
-        this.direction.z = vz/absv;
+        this.direction.setX(vx/absv);
+        this.direction.setY(vy/absv);
+        this.direction.setX(vz/absv);
         this.alive = true;
     }
     Photon(double x, double y, double z) {
-        this.ph.x = x; this.ph.y = y; this.ph.z = z;
+        this.ph.setX(x);
+        this.ph.setY(y);
+        this.ph.setZ(z);
         Calculator calc = new Calculator();
         Random random = new Random(System.currentTimeMillis());
         double vx = random.nextInt();
@@ -32,15 +34,20 @@ public class Photon {
         double vz = random.nextInt();
         Coordinates v = new Coordinates(vx, vy, vz);
         double absv = calc.vectorLength(v);
-        this.direction.x = vx/absv;
-        this.direction.y = vy/absv;
-        this.direction.z = vz/absv;
+        this.direction.setX(vx/absv);
+        this.direction.setY(vy/absv);
+        this.direction.setZ(vz/absv);
         this.alive = true;
     }
 
     Photon(double x, double y, double z, double dx, double dy, double dz){
-        this.ph.x = x; this.ph.y = y; this.ph.z = z;
-        this.direction.x = dx; this.direction.y = dy; this.direction.z = dz;
+        this.ph.setX(x);
+        this.ph.setY(y);
+        this.ph.setZ(z);
+
+        this.direction.setX(dx);
+        this.direction.setY(dy);
+        this.direction.setZ(dz);
         this.alive = true;
     }
 

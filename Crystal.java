@@ -8,11 +8,12 @@ public class Crystal {
     public Coordinates FULL_SIZE = new Coordinates(X_MAX, Y_MAX, Z_MAX);
     private Detector detector = new Detector();
     ArrayList<Wall> walls = new ArrayList<>(); //массив стен, 1 minX, 2 maxX ...
+
     Crystal(double x, double y, double z){
         //принимает размеры по каждой оси, записывает их себе и создает стенки
-        this.X_MAX = x;
-        this.Y_MAX = y;
-        this.Z_MAX = z;
+        X_MAX = x;
+        Y_MAX = y;
+        Z_MAX = z;
         this.FULL_SIZE.setCoordinates(x, y, z);
         Wall xMin = new Wall(FULL_SIZE, "x - min"); this.walls.add(xMin);
         Wall xMax = new Wall(FULL_SIZE, "x - max"); this.walls.add(xMax);
@@ -47,12 +48,11 @@ public class Crystal {
 
     Coordinates findWall(Photon photon){
         //ищет стенку, с которой пересечется фотончик
-        Calculator calc = new Calculator();
         Coordinates inPoint = new Coordinates();
         for (int i = 0; i < this.walls.size(); i++){
-            if (calc.cosBetweenVectors(photon.direction, this.walls.get(i).normal) >= 0)continue;
-            if (calc.cosBetweenVectors(photon.direction, this.walls.get(i).normal) < 0){
-                Coordinates point = calc.intersectionPoint(photon, this.walls.get(i));
+            if (Calculator.cosBetweenVectors(photon.direction, this.walls.get(i).normal) >= 0)continue;
+            if (Calculator.cosBetweenVectors(photon.direction, this.walls.get(i).normal) < 0){
+                Coordinates point = Calculator.intersectionPoint(photon, this.walls.get(i));
                 if (this.walls.get(i).isOnTheWall(point)){
                     inPoint = point;
                     break;
@@ -70,11 +70,11 @@ public class Crystal {
             this.detector.interactionWithPhoton(photon, point);
         } else {
             if ( //если фотон попал в ребро, он пропадает, такие не буду отражать
-                    ((point.x == 0.0) & (point.y == 0.0)) | ((point.x == 0.0) & (point.z == 0.0)) | ((point.y == 0.0) & (point.z == 0.0)) |
-                            ((point.x == X_MAX) & (point.y == 0.0)) | ((point.x == X_MAX) & (point.z == 0.0)) |
-                            ((point.y == Y_MAX) & (point.x == 0.0)) | ((point.y == Y_MAX) & (point.z == 0.0)) |
-                            ((point.z == Z_MAX) & (point.y == 0.0)) | ((point.z == Z_MAX) & (point.x == 0.0)) |
-                            ((point.x == X_MAX) & (point.y == Y_MAX)) | ((point.x == X_MAX) & (point.z == Z_MAX)) | ((point.z == Z_MAX) & (point.y == Y_MAX))
+                    ((point.getX() == 0.0) & (point.getY() == 0.0)) | ((point.getX() == 0.0) & (point.getZ() == 0.0)) | ((point.getY() == 0.0) & (point.getZ() == 0.0)) |
+                            ((point.getX() == X_MAX) & (point.getY() == 0.0)) | ((point.getX() == X_MAX) & (point.getZ() == 0.0)) |
+                            ((point.getY() == Y_MAX) & (point.getX() == 0.0)) | ((point.getY() == Y_MAX) & (point.getZ() == 0.0)) |
+                            ((point.getZ() == Z_MAX) & (point.getY() == 0.0)) | ((point.getZ() == Z_MAX) & (point.getX() == 0.0)) |
+                            ((point.getX() == X_MAX) & (point.getY() == Y_MAX)) | ((point.getX() == X_MAX) & (point.getZ() == Z_MAX)) | ((point.getZ() == Z_MAX) & (point.getY() == Y_MAX))
             ) {
                 photon.beAbsorbed();
 
@@ -82,19 +82,20 @@ public class Crystal {
                 //попал в стенку, будем отражать
                 Wall currentWall = null;
                 //найдем стенку, в которую попал
-                if (point.x == 0.0) {currentWall = this.walls.get(0);}
-                if (point.x == X_MAX) {currentWall = this.walls.get(1);}
-                if (point.y == 0.0) {currentWall = this.walls.get(2);}
-                if (point.y == Y_MAX) {currentWall = this.walls.get(3);}
-                if (point.z == 0.0) {currentWall = this.walls.get(4);}
-                if (point.z == Z_MAX) {currentWall = this.walls.get(5);}
+                if (point.getX() == 0.0) {currentWall = this.walls.get(0);}
+                if (point.getX() == X_MAX) {currentWall = this.walls.get(1);}
+                if (point.getY() == 0.0) {currentWall = this.walls.get(2);}
+                if (point.getY() == Y_MAX) {currentWall = this.walls.get(3);}
+                if (point.getZ() == 0.0) {currentWall = this.walls.get(4);}
+                if (point.getZ() == Z_MAX) {currentWall = this.walls.get(5);}
+
                 double probability = Math.random();
                 if (probability >= currentWall.getBeta()){
                     //бета это вероятность быть поглощенным
                     //не поглотился - отражаем
-                    Coordinates reflected = calc.reflectLambertian(photon.direction, currentWall.normal);
-                    photon.direction.setCoordinates(reflected.x, reflected.y, reflected.z);
-                    photon.ph.setCoordinates(point.x, point.y, point.z);
+                    Coordinates reflected = Calculator.reflectLambertian(photon.direction, currentWall.normal);
+                    photon.direction.setCoordinates(reflected.getX(), reflected.getY(), reflected.getZ());
+                    photon.ph.setCoordinates(point.getX(), point.getY(), point.getZ());
                 } else {
                     photon.beAbsorbed();
                 }
