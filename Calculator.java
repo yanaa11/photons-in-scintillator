@@ -2,7 +2,6 @@ import static java.lang.Double.MAX_VALUE;
 
 public class Calculator {
 
-
     static Coordinates intersectionPoint(Photon ph, Wall wall){
         //находит точку пересечения прямой - "траектории фотончика" с какой-то плоскостью. полученная тут координата может быть где-то на плоскоти за пределами стенки
         Coordinates point = new Coordinates();
@@ -54,8 +53,9 @@ public class Calculator {
         //ищем для фотончика стенку, куда попадет
         Coordinates inPoint = new Coordinates();
         for (int i = 0; i < crystal.walls.size(); i++){
-            if (cosBetweenVectors(photon.direction, crystal.walls.get(i).normal) >= 0)continue; //если фотон летит от стенки (или вдоль), то нечего нам на неё и смотреть
-            if (cosBetweenVectors(photon.direction, crystal.walls.get(i).normal) < 0){
+            //если фотон летит от стенки (или вдоль), то нечего нам на неё и смотреть
+            if (cosBetweenVectors(photon.direction, crystal.walls.get(i).normal) >= 0) continue;
+            else {
                 //а вот если летит на стенку, то надо посмотреть, в какой точке попадет
                 Coordinates point = intersectionPoint(photon, crystal.walls.get(i));
                 if (crystal.walls.get(i).isOnTheWall(point)){

@@ -9,6 +9,24 @@ public class Crystal {
     private Detector detector = new Detector();
     ArrayList<Wall> walls = new ArrayList<>(); //массив стен, 1 minX, 2 maxX ...
 
+    void setnCr(double n1){
+        this.nCr = n1;
+    }
+
+    void setBeta(double beta){
+        for (int i = 0; i < 6; i++){
+            this.walls.get(i).setBeta(beta);
+        }
+    }
+
+    void setDetectorMode(int mode){
+        this.detector.setMode(mode);
+    }
+
+    int getCounted(){
+        return this.detector.getCounted();
+    }
+
     Crystal(double x, double y, double z){
         //принимает размеры по каждой оси, записывает их себе и создает стенки
         X_MAX = x;
@@ -23,28 +41,10 @@ public class Crystal {
         Wall zMax = new Wall(FULL_SIZE, "z - max"); this.walls.add(zMax);
     }
 
-    void setnCr(double n1){
-        this.nCr = n1;
-    }
-    void setBeta(double beta){
-        for (int i = 0; i < 6; i++){
-            this.walls.get(i).setBeta(beta);
-        }
-    }
-
     void adDetector(Coordinates detL, Coordinates detH, double alpha, double nExt){
         this.detector = new Detector(detL, detH, alpha, nExt);
         this.detector.setnCrys(this.nCr);
     }
-
-    void setDetectorMode(int mode){
-        this.detector.setMode(mode);
-    }
-
-    int getCounted(){
-        return this.detector.getCounted();
-    }
-
 
     Coordinates findWall(Photon photon){
         //ищет стенку, с которой пересечется фотончик
@@ -70,23 +70,31 @@ public class Crystal {
             this.detector.interactionWithPhoton(photon, point);
         } else {
             if ( //если фотон попал в ребро, он пропадает, такие не буду отражать
-                    ((point.getX() == 0.0) & (point.getY() == 0.0)) | ((point.getX() == 0.0) & (point.getZ() == 0.0)) | ((point.getY() == 0.0) & (point.getZ() == 0.0)) |
-                            ((point.getX() == X_MAX) & (point.getY() == 0.0)) | ((point.getX() == X_MAX) & (point.getZ() == 0.0)) |
-                            ((point.getY() == Y_MAX) & (point.getX() == 0.0)) | ((point.getY() == Y_MAX) & (point.getZ() == 0.0)) |
-                            ((point.getZ() == Z_MAX) & (point.getY() == 0.0)) | ((point.getZ() == Z_MAX) & (point.getX() == 0.0)) |
-                            ((point.getX() == X_MAX) & (point.getY() == Y_MAX)) | ((point.getX() == X_MAX) & (point.getZ() == Z_MAX)) | ((point.getZ() == Z_MAX) & (point.getY() == Y_MAX))
+                ((point.getX() == 0.0) && (point.getY() == 0.0)) ||
+                ((point.getX() == 0.0) && (point.getZ() == 0.0)) ||
+                ((point.getY() == 0.0) && (point.getZ() == 0.0)) ||
+
+                ((point.getX() == X_MAX) && (point.getY() == 0.0)) ||
+                ((point.getX() == X_MAX) && (point.getZ() == 0.0)) ||
+                ((point.getY() == Y_MAX) && (point.getX() == 0.0)) ||
+                ((point.getY() == Y_MAX) && (point.getZ() == 0.0)) ||
+                ((point.getZ() == Z_MAX) && (point.getY() == 0.0)) ||
+                ((point.getZ() == Z_MAX) && (point.getX() == 0.0)) ||
+
+                ((point.getX() == X_MAX) && (point.getY() == Y_MAX)) ||
+                ((point.getX() == X_MAX) && (point.getZ() == Z_MAX)) ||
+                ((point.getZ() == Z_MAX) && (point.getY() == Y_MAX))
             ) {
                 photon.beAbsorbed();
-
             } else {
                 //попал в стенку, будем отражать
                 Wall currentWall = null;
                 //найдем стенку, в которую попал
-                if (point.getX() == 0.0) {currentWall = this.walls.get(0);}
+                if (point.getX() == 0.0)   {currentWall = this.walls.get(0);}
                 if (point.getX() == X_MAX) {currentWall = this.walls.get(1);}
-                if (point.getY() == 0.0) {currentWall = this.walls.get(2);}
+                if (point.getY() == 0.0)   {currentWall = this.walls.get(2);}
                 if (point.getY() == Y_MAX) {currentWall = this.walls.get(3);}
-                if (point.getZ() == 0.0) {currentWall = this.walls.get(4);}
+                if (point.getZ() == 0.0)   {currentWall = this.walls.get(4);}
                 if (point.getZ() == Z_MAX) {currentWall = this.walls.get(5);}
 
                 double probability = Math.random();
@@ -99,10 +107,7 @@ public class Crystal {
                 } else {
                     photon.beAbsorbed();
                 }
-
             }
         }
-
     }
-
 }
